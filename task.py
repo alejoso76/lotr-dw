@@ -21,7 +21,7 @@ def main():
 
 
 if __name__ == '__main__':
-    digital_worker_name = "Peer Code Training Sample Project"
+    digital_worker_name = "LOTR DW"
     # Before and after process
     log_message("Start - {}".format(digital_worker_name))
     print_version()
