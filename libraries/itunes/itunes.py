@@ -45,20 +45,20 @@ class Itunes:
     def go_to_crew_member_tab_and_get_data(self):
         """Goes to each unique crew member tab and gets data from the movies
         """
+        # Open tab
+        self.browser.execute_javascript('window.open()')
+        # Go to tab
+        self.browser.switch_window(locator='NEW')
+        tabs_dict['Crew Member'] = len(tabs_dict)
         # Crew members that failed to open tab or get data
         pending_crew_members = []
         # Dict that has crew member name as key and value a list of dicts
         crew_movies_dict = {}
         for crew_member in self.crew_members_list_dict:
-            # Open tab
-            self.browser.execute_javascript('window.open()')
-            # Go to tab
-            self.browser.switch_window(locator='NEW')
             # Go to url in tab
             try:
                 # Go to url
                 self.browser.go_to(crew_member['url'])
-                tabs_dict[F'Itunes-{crew_member["name"]}'] = len(tabs_dict)
 
                 # Find movies and its genres
                 movies = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-lockup__title "]/div', 'find_elements')
@@ -73,50 +73,43 @@ class Itunes:
                     }
                     movies_genres_list.append(dict_movie_genre)
                 crew_movies_dict[crew_member["name"]] = movies_genres_list
-
             except:
                 # If fails, append to pending list
                 pending_crew_members.append(crew_member)
 
-            
-            finally:
-                # Close tab
-                self.browser.execute_javascript('window.close()')
-                # Go to initial tab
-                self.browser.switch_window(locator=self.browser.get_window_handles()[tabs_dict['Itunes']])
-                # Remove tab from tabs_dict
-                tabs_dict.pop(F'Itunes-{crew_member["name"]}')
+
 
         # Search the pending crew
         for pending_crew_member in pending_crew_members:
-            # Open tab
-            self.browser.execute_javascript('window.open()')
-            # Go to tab
-            self.browser.switch_window(locator='NEW')
+            # TODO: Capture page if fails
             # Go to url in tab
             self.browser.go_to(crew_member['url'])
             tabs_dict[F'Itunes-{crew_member["name"]}'] = len(tabs_dict)
+            try:
+                #TODO: Add data proccess here
+                movies = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-lockup__title "]/div', 'find_elements')
+                genres = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-truncate we-truncate--single-line  we-lockup__subtitle"]', 'find_elements')
+                
+                movies_genres_list = []
+                for movie, genre in zip(movies, genres):
+                    dict_movie_genre = {
+                        'Name': movie.text,
+                        'Genre': genre.text
+                    }
+                    movies_genres_list.append(dict_movie_genre)
+                crew_movies_dict[crew_member["name"]] = movies_genres_list
+            except Exception as e:
+                # If fails, append to pending list
+                capture_page_screenshot(OUTPUT_FOLDER)
+                log_message(
+                    "An unexpected error was enconutered during the process: {}".format(str(e)))
 
-            #TODO: Add data proccess here
-            movies = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-lockup__title "]/div', 'find_elements')
-            genres = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-truncate we-truncate--single-line  we-lockup__subtitle"]', 'find_elements')
-            
-            movies_genres_list = []
-            for movie, genre in zip(movies, genres):
-                dict_movie_genre = {
-                    'Name': movie.text,
-                    'Genre': genre.text
-                }
-                movies_genres_list.append(dict_movie_genre)
-            crew_movies_dict[crew_member["name"]] = movies_genres_list
-            
-            # Close tab
-            self.browser.execute_javascript('window.close()')
-            # Go to initial tab
-            self.browser.switch_window(locator=self.browser.get_window_handles()[tabs_dict['Itunes']])
-            # Remove tab from tabs_dict
-            tabs_dict.pop(F'Itunes-{crew_member["name"]}')
-
+        # Close tab
+        self.browser.execute_javascript('window.close()')
+        # Go to initial tab
+        self.browser.switch_window(locator=self.browser.get_window_handles()[tabs_dict['Itunes']])
+        # Remove tab from tabs_dict
+        tabs_dict.pop('Crew Member')
         self.crew_movies_dict = crew_movies_dict
 
     def write_data_to_excel(self):

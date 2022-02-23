@@ -16,6 +16,13 @@ class Google:
         """Access Google from the browser
         """
         self.browser.go_to(self.google_url)
+        #? Get source code of browser in that moment -> To debug in the cloud
+        # print(self.browser.get_source())
+        try:
+            act_on_element(
+                '//button[child::div[text()="I agree"]]', "click_element")
+        except:
+            pass
 
     def search_movie(self):
         """Searches the movie LOTR on Google
@@ -23,7 +30,7 @@ class Google:
         self.browser.input_text_when_element_is_visible(
             '//input[@title="Search"]', 'the lord of the rings the return of the king itunes movies us')
         act_on_element(
-            '//div[@class="FPdoLc lJ9FBc"]//input[@value="Google Search"]', "click_element")
+            '//div[@class="FPdoLc lJ9FBc"]//input[@value="Google Search"]', "click_element", 2)
     
     def get_itunes_link(self) -> str:
         """Obtains the first itunes link
