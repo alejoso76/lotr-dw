@@ -25,7 +25,7 @@ class Itunes:
         """Gets the name of the crew member and its tab link. If a member has already been checked, it will not duplicate it (Unique)
         """
         crew_members = act_on_element(
-            '//div[@class="l-row cast-list"]//dd[@class="cast-list__detail"]/a', "find_elements")
+            '//div[@class="l-row cast-list"]//dd[@class="cast-list__detail"]/a', "find_elements")[:5]
         crew_members_unique = []
         crew_names = []
 
@@ -61,8 +61,8 @@ class Itunes:
                 self.browser.go_to(crew_member['url'])
 
                 # Find movies and its genres
-                movies = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-lockup__title "]/div', 'find_elements')[:5]
-                genres = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-truncate we-truncate--single-line  we-lockup__subtitle"]', 'find_elements')[:5]
+                movies = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-lockup__title "]/div', 'find_elements')
+                genres = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-truncate we-truncate--single-line  we-lockup__subtitle"]', 'find_elements')
                 
                 # List to pass to excel
                 movies_genres_list = []
@@ -87,8 +87,8 @@ class Itunes:
             tabs_dict[F'Itunes-{crew_member["name"]}'] = len(tabs_dict)
             try:
                 #TODO: Add data proccess here
-                movies = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-lockup__title "]/div', 'find_elements')[:5]
-                genres = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-truncate we-truncate--single-line  we-lockup__subtitle"]', 'find_elements')[:5]
+                movies = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-lockup__title "]/div', 'find_elements')
+                genres = act_on_element('//section[div/h2[text()="Movies"]]//div[@class="l-row l-row--peek"]/a//div[@class="we-truncate we-truncate--single-line  we-lockup__subtitle"]', 'find_elements')
                 
                 movies_genres_list = []
                 for movie, genre in zip(movies, genres):
